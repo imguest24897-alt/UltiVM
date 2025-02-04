@@ -1,0 +1,2 @@
+# NOTICES BEFORE MAKING A PULL REQUEST
+We do not accept commits with messages such as "Add files via upload" or other. We accept only something like "Add option to use PNG", "Fix bug", "Patch vulnerability", "Update allowed QEMU arguments" and "Remove unnecearry code".
