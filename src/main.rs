@@ -78,6 +78,7 @@ fn main() {
 
         if valid {
             println!("Parsing success!");
+            start_webserver();
         } else {
             println!("E: Parsing failed! Please check the QEMU (quick emulator) arguments.");
         }
