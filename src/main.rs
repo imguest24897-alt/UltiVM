@@ -90,7 +90,6 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let qemu_command = config.vm.qemu_command;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
-    // Run QEMU with VNC server in background
     std::thread::spawn(move || {
         let qemu_command = format!("{} -vnc :{} {}", qemu_command, vnc_port - 5900, qemu_args);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
@@ -176,8 +175,6 @@ fn main() {
             println!("W: Web application is not implemented, the page will be currently a status check page.");
             let _ = start_webserver(config);
         } else {
-            println!("Web application is disabled in the configuration file.");
-            // Run QEMU with VNC server in background
             std::thread::spawn(move || {
                 let qemu_command = format!("{} -vnc :{} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.qemu_args);
                 println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
