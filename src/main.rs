@@ -58,6 +58,8 @@ struct VMConfig {
     qemu_command: String,
     #[serde(rename = "network-adapter")]
     network_adapter: String,
+    #[serde(rename = "machine-type")]
+    machine_type: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -88,10 +90,11 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let vnc_port = config.main.vnc_port;
     let qemu_args = config.vm.qemu_args;
     let qemu_command = config.vm.qemu_command;
+    let machine_type = config.vm.machine_type;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
     std::thread::spawn(move || {
-        let qemu_command = format!("{} -vnc :{} {}", qemu_command, vnc_port - 5900, qemu_args);
+        let qemu_command = format!("{} -vnc :{} -machine {} {}", qemu_command, vnc_port - 5900, machine_type, qemu_args);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
         let output = process::Command::new("sh")
             .arg("-c")
@@ -180,7 +183,7 @@ fn main() {
             let _ = start_webserver(config);
         } else {
             std::thread::spawn(move || {
-                let qemu_command = format!("{} -vnc :{} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.qemu_args);
+                let qemu_command = format!("{} -vnc :{} -machine {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.qemu_args);
                 println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
                 let output = process::Command::new("sh")
                     .arg("-c")
