@@ -60,6 +60,10 @@ struct VMConfig {
     network_adapter: String,
     #[serde(rename = "machine-type")]
     machine_type: String,
+    #[serde(rename = "cpu-model")]
+    cpu_model: String,
+    #[serde(rename = "qemu-kvm-enabled")]
+    qemu_kvm_enabled: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -91,10 +95,13 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let qemu_args = config.vm.qemu_args;
     let qemu_command = config.vm.qemu_command;
     let machine_type = config.vm.machine_type;
+    let cpu_model = config.vm.cpu_model;
+    let qemu_kvm_enabled = config.vm.qemu_kvm_enabled;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
     std::thread::spawn(move || {
-        let qemu_command = format!("{} -vnc :{} -machine {} {}", qemu_command, vnc_port - 5900, machine_type, qemu_args);
+        let kvm_option = if qemu_kvm_enabled { "-enable-kvm" } else { "" };
+        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} {} {}", qemu_command, vnc_port - 5900, machine_type, cpu_model, kvm_option, qemu_args);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
         let output = process::Command::new("sh")
             .arg("-c")
@@ -183,7 +190,8 @@ fn main() {
             let _ = start_webserver(config);
         } else {
             std::thread::spawn(move || {
-                let qemu_command = format!("{} -vnc :{} -machine {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.qemu_args);
+                let kvm_option = if config.vm.qemu_kvm_enabled { "-enable-kvm" } else { "" };
+                let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, kvm_option, config.vm.qemu_args);
                 println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
                 let output = process::Command::new("sh")
                     .arg("-c")
