@@ -1,0 +1,26 @@
+name: Bug Report
+description: Report any bugs or issues you have encountered in the project
+labels: [bug, status: pending triage]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Please describe the bug you encountered. Before submitting, make sure to check if the bug has already been reported!"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Provide a clear list of steps to reproduce the bug. The more detailed, the better!"
+    validations:
+      required: true
+  - type: dropdown
+    id: duplicatecheck
+    attributes:
+      label: "Have you checked for any similar issues before reporting this one? If you find a related issue, please refrain from submitting a new report to avoid duplication."
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true

@@ -1,0 +1,10 @@
+name: Other
+description: Report a general issue or provide feedback. Use this one template if you can't find a more specific template that fits your needs.
+labels: [issue, status: pending triage]
+body:
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: "Please describe the issue or provide your feedback here."
+    validations:
+      required: true

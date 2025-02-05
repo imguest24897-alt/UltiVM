@@ -1,0 +1,32 @@
+name: Feature Request
+description: Suggest a new feature or improvement for the project
+labels: [enhancement, status: pending triage]
+body:
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: "Please describe the feature or improvement you'd like to see."
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: "What is the use case or problem this feature will solve?"
+      description: "Explain why this feature would be useful or how it would improve the project."
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "How important is this feature?"
+      options:
+        - "High Priority"
+        - "Medium Priority"
+        - "Low Priority"
+    validations:
+      required: true
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "Any additional information or suggestions?"
+      description: "Feel free to share any relevant thoughts or ideas that could help in implementing the feature."
