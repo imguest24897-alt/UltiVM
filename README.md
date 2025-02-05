@@ -14,6 +14,8 @@ git submodule update --init --recursive
 3. Installing dependencies (if your cargo does not want to do that)
 ```bash
 cargo install actix-web
+cargo install config
+cargo install serde
 ```
 4. Build it
 ```bash
