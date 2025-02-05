@@ -137,6 +137,10 @@ fn main() {
     println!("=         COLLABORATIVE MACHINE            =");
     println!("============================================");
     println!();
+    if !std::path::Path::new("req/config.ini").exists() {
+        eprintln!("E: Configuration file not found! You should go ahead and download the sample config.ini file from our repository (https://github.com/imguest24897-alt/UltiVM).");
+        exit(1);
+    }
     println!("Parsing QEMU (quick emulator) arguments: {}...", config.vm.qemu_args);
 
     let allowed_args = vec![
