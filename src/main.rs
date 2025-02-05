@@ -65,6 +65,8 @@ struct VMConfig {
     #[serde(rename = "qemu-kvm-enabled")]
     qemu_kvm_enabled: bool,
     vga: String,
+    #[serde(rename = "show-window")]
+    show_window: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -99,11 +101,13 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let cpu_model = config.vm.cpu_model;
     let qemu_kvm_enabled = config.vm.qemu_kvm_enabled;
     let vga = config.vm.vga;
+    let show_window = config.vm.show_window;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
     std::thread::spawn(move || {
         let kvm_option = if qemu_kvm_enabled { "-enable-kvm" } else { "" };
-        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -vga {} {} {}", qemu_command, vnc_port - 5900, machine_type, cpu_model, vga, kvm_option, qemu_args);
+        let display_option = if show_window { "-display gtk" } else { "" };
+        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -vga {} {} {} {}", qemu_command, vnc_port - 5900, machine_type, cpu_model, vga, kvm_option, display_option, qemu_args);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
         let output = process::Command::new("sh")
             .arg("-c")
@@ -193,7 +197,8 @@ fn main() {
         } else {
             std::thread::spawn(move || {
                 let kvm_option = if config.vm.qemu_kvm_enabled { "-enable-kvm" } else { "" };
-                let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -vga {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, config.vm.vga, kvm_option, config.vm.qemu_args);
+                let display_option = if config.vm.show_window { "-display gtk" } else { "" };
+                let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -vga {} {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, config.vm.vga, kvm_option, display_option, config.vm.qemu_args);
                 println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
                 let output = process::Command::new("sh")
                     .arg("-c")
