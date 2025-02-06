@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature or improvement for the project
+description: Suggest a new feature or improvement for the project.
 labels: [enhancement, status: pending triage]
 body:
   - type: textarea
