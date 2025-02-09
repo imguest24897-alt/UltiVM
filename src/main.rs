@@ -108,12 +108,15 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let qemu_kvm_enabled = config.vm.qemu_kvm_enabled;
     let vga = config.vm.vga;
     let show_window = config.vm.show_window;
+    let qemu_ram = config.vm.qemu_ram;
+    let qemu_cpu = config.vm.qemu_cpu;
+    let network_adapter = config.vm.network_adapter;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
     std::thread::spawn(move || {
         let kvm_option = if qemu_kvm_enabled { "-enable-kvm" } else { "" };
         let display_option = if show_window { "-display gtk" } else { "" };
-        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -vga {} {} {} {}", qemu_command, vnc_port - 5900, machine_type, cpu_model, vga, kvm_option, display_option, qemu_args);
+        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {}", qemu_command, vnc_port - 5900, machine_type, cpu_model, qemu_ram, qemu_cpu, network_adapter, vga, kvm_option, display_option, qemu_args);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
         let output = process::Command::new("sh")
             .arg("-c")
@@ -205,7 +208,7 @@ fn main() {
             std::thread::spawn(move || {
                 let kvm_option = if config.vm.qemu_kvm_enabled { "-enable-kvm" } else { "" };
                 let display_option = if config.vm.show_window { "-display gtk" } else { "" };
-                let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -vga {} {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, config.vm.vga, kvm_option, display_option, config.vm.qemu_args);
+                let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, config.vm.qemu_ram, config.vm.qemu_cpu, config.vm.network_adapter, config.vm.vga, kvm_option, display_option, config.vm.qemu_args);
                 println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
                 let output = process::Command::new("sh")
                     .arg("-c")
