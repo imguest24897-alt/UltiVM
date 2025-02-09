@@ -91,6 +91,12 @@ async fn greet() -> impl Responder {
         "#)
 }
 
+async fn auth() -> impl Responder {
+    HttpResponse::NotImplemented()
+        .content_type("text/plain; charset=utf-8")
+        .body("Auth is not implemented, sorry :(")
+}
+
 #[actix_web::main]
 async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let web_app_port = config.main.web_app_port;
@@ -131,6 +137,7 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(greet))
+            .route("/auth", web::get().to(auth))
     })
     .bind(format!("127.0.0.1:{}", web_app_port))?
     .run()
