@@ -1,5 +1,5 @@
 # UltiVM
-A little CollabVM clone written in Rust.
+A little CollabVM clone written in Rust. (buggy tho)
 ## Building
 Before building, make sure you have Rust with Cargo installed. Also, Git is required to clone the repo. Many commands use Unix syntax because I use Linux.
 ### Steps
