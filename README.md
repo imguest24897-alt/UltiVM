@@ -17,6 +17,7 @@ cargo install actix-web
 cargo install config
 cargo install serde
 cargo install reqwest
+cargo install tokio
 ```
 4. Build it
 ```bash
