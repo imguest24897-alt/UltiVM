@@ -16,6 +16,7 @@ git submodule update --init --recursive
 cargo install actix-web
 cargo install config
 cargo install serde
+cargo install reqwest
 ```
 4. Build it
 ```bash
