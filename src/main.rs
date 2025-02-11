@@ -1,4 +1,4 @@
-use std::process::exit;
+use std::process::{exit, Command};
 use std::env;
 use std::process;
 use actix_web::{web, App, HttpServer, Responder};
@@ -39,6 +39,22 @@ struct AuthConfig {
     db_type: String,
     #[serde(rename = "dbPath")]
     db_path: String,
+    #[serde(rename = "mailEnabled")]
+    mailEnabled: bool,
+    #[serde(rename = "smtp")]
+    smtp: String,
+    #[serde(rename = "smtpUsername")]
+    smtp_username: String,
+    #[serde(rename = "smtpPassword")]
+    smtp_password: String,
+    #[serde(rename = "smtpFrom")]
+    smtp_from: String,
+    #[serde(rename = "imap")]
+    imap: String,
+    #[serde(rename = "imapUsername")]
+    imap_username: String,
+    #[serde(rename = "imapPassword")]
+    imap_password: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -114,6 +130,7 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let qemu_ram = config.vm.qemu_ram;
     let qemu_cpu = config.vm.qemu_cpu;
     let network_adapter = config.vm.network_adapter;
+    let authEnabled = config.auth.auth_enabled;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
     std::thread::spawn(move || {
@@ -140,14 +157,26 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
         }
     });
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
             .route("/", web::get().to(greet))
-            .route("/auth", web::get().to(auth))
+            .configure(|cfg| {
+            if config.auth.auth_enabled {
+                cfg.route("/auth", web::get().to(auth));
+            }
+            })
     })
     .bind(format!("127.0.0.1:{}", web_app_port))?
     .run()
     .await
+}
+
+async fn remove_cache() {
+    let _remove_cache = Command::new("bash")
+        .arg("-c")
+        .arg("rm -rf .ultivm_cache")
+        .output()
+        .expect("Failed to execute command");
 }
 
 async fn check_for_updates() -> Result<(), Error> {
@@ -187,7 +216,11 @@ fn main() {
             exit(1);
         }
     };
-
+    let _create_cache = Command::new("bash")
+        .arg("-c")
+        .arg("mkdir .ultivm_cache")
+        .output()
+        .expect("Failed to execute command");
     println!("============================================");
     println!("=   WELCOME TO ULTIVM - A ONLINE VIRTUAL   =");
     println!("=         COLLABORATIVE MACHINE            =");
@@ -245,27 +278,29 @@ fn main() {
             let _ = start_webserver(config);
         } else {
             std::thread::spawn(move || {
-                let kvm_option = if config.vm.qemu_kvm_enabled { "-enable-kvm" } else { "" };
-                let display_option = if config.vm.show_window { "-display gtk" } else { "" };
-                let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, config.vm.qemu_ram, config.vm.qemu_cpu, config.vm.network_adapter, config.vm.vga, kvm_option, display_option, config.vm.qemu_args);
-                println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
-                let output = process::Command::new("sh")
-                    .arg("-c")
-                    .arg(qemu_command)
-                    .output()
-                    .expect("Failed to execute QEMU command");
-                println!("[QEMU] Trying to show error dialog using 'zenity'...");
-                if !output.status.success() {
-                    let error_message = String::from_utf8_lossy(&output.stderr);
-                    println!("[QEMU] Error: {}", error_message);
-                    eprintln!("[QEMU] Error: {}", error_message);
-                    let _zenity_output = process::Command::new("sh")
-                    .arg("-c")
-                    .arg(format!("zenity --error --title=\"Whoopsie...\" --text=\"We've encountered into an error...\n{}\nFor additional information, view what happened in the logs.\" --ok-label=\"Exit from UltiVM\"", error_message))
-                    .output()
-                    .expect("FAIL");
-                    exit(1);
-                }
+            let kvm_option = if config.vm.qemu_kvm_enabled { "-enable-kvm" } else { "" };
+            let display_option = if config.vm.show_window { "-display gtk" } else { "" };
+            let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {}", config.vm.qemu_command, config.main.vnc_port - 5900, config.vm.machine_type, config.vm.cpu_model, config.vm.qemu_ram, config.vm.qemu_cpu, config.vm.network_adapter, config.vm.vga, kvm_option, display_option, config.vm.qemu_args);
+            println!("[QEMU] Starting virtual machine with VNC on port {}...", config.main.vnc_port);
+            let output = process::Command::new("sh")
+                .arg("-c")
+                .arg(qemu_command)
+                .output()
+                .expect("Failed to execute QEMU command");
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(remove_cache());
+            println!("[QEMU] Trying to show error dialog using 'zenity'...");
+            if !output.status.success() {
+                let error_message = String::from_utf8_lossy(&output.stderr);
+                println!("[QEMU] Error: {}", error_message);
+                eprintln!("[QEMU] Error: {}", error_message);
+                let _zenity_output = process::Command::new("sh")
+                .arg("-c")
+                .arg(format!("zenity --error --title=\"Whoopsie...\" --text=\"We've encountered into an error...\n{}\nFor additional information, view what happened in the logs.\" --ok-label=\"Exit from UltiVM\"", error_message))
+                .output()
+                .expect("");
+                exit(1);
+            }
             }).join().unwrap();
         }
     } else {
