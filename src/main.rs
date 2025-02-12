@@ -84,6 +84,8 @@ struct VMConfig {
     vga: String,
     #[serde(rename = "show-window")]
     show_window: bool,
+    #[serde(rename = "name")]
+    name: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -131,12 +133,13 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     let qemu_cpu = config.vm.qemu_cpu;
     let network_adapter = config.vm.network_adapter;
     let authEnabled = config.auth.auth_enabled;
+    let name = config.vm.name;
 
     println!("[SERVER] Web server starting at port {}...", web_app_port);
     std::thread::spawn(move || {
         let kvm_option = if qemu_kvm_enabled { "-enable-kvm" } else { "" };
         let display_option = if show_window { "-display gtk" } else { "" };
-        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {}", qemu_command, vnc_port - 5900, machine_type, cpu_model, qemu_ram, qemu_cpu, network_adapter, vga, kvm_option, display_option, qemu_args);
+        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {} -name \"{}\"", qemu_command, vnc_port - 5900, machine_type, cpu_model, qemu_ram, qemu_cpu, network_adapter, vga, kvm_option, display_option, qemu_args, name);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
         let output = process::Command::new("sh")
             .arg("-c")
