@@ -139,7 +139,12 @@ async fn start_webserver(config: AppConfig) -> std::io::Result<()> {
     std::thread::spawn(move || {
         let kvm_option = if qemu_kvm_enabled { "-enable-kvm" } else { "" };
         let display_option = if show_window { "-display gtk" } else { "" };
-        let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {} -name \"{}\"", qemu_command, vnc_port - 5900, machine_type, cpu_model, qemu_ram, qemu_cpu, network_adapter, vga, kvm_option, display_option, qemu_args, name);
+let sanitized_qemu_args: String = qemu_args
+    .split_whitespace()
+    .filter(|arg| !arg.contains(";") && !arg.contains("&&") && !arg.contains("|"))
+    .collect::<Vec<&str>>()
+    .join(" ");
+let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net nic,model={} -vga {} {} {} {} -name \"{}\"", qemu_command, vnc_port - 5900, machine_type, cpu_model, qemu_ram, qemu_cpu, network_adapter, vga, kvm_option, display_option, sanitized_qemu_args, name);
         println!("[QEMU] Starting virtual machine with VNC on port {}...", vnc_port);
         let output = process::Command::new("sh")
             .arg("-c")
