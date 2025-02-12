@@ -105,7 +105,7 @@ async fn greet() -> impl Responder {
         .content_type("text/html; charset=utf-8")
         .body(r#"
             <h1>It looks like your UltiVM instance is running correctly!</h1>
-            <p>If you see this message, your UltiVM instancerust analyzer is up and running. You can now connect to the VNC server at <b>localhost:5901</b> using a VNC client.</p>
+            <p>If you see this message, your UltiVM instance is up and running. You can now connect to the VNC server at <b>localhost:5901</b> using a VNC client.</p>
             <p>If you want a web client for UltiVM, make sure that enableWebApp is set to true in the configuration file <i>(config.ini)</i>.</p>
         "#)
 }
