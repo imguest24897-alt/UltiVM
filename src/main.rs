@@ -98,7 +98,7 @@ struct AppConfig {
     vm: VMConfig,
 }
 
-const VERSION: &str = "0.0.1";
+const VERSION: &str = "0.0.1u1";
 
 async fn greet() -> impl Responder {
     HttpResponse::Ok()
