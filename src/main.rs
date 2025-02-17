@@ -180,7 +180,7 @@ let qemu_command = format!("{} -vnc :{} -machine {} -cpu {} -m {} -smp {} -net n
 }
 
 async fn remove_cache() {
-    let _remove_cache = Command::new("bash")
+    let _remove_cache = Command::new("sh")
         .arg("-c")
         .arg("rm -rf .ultivm_cache")
         .output()
@@ -297,8 +297,8 @@ fn main() {
                 .expect("Failed to execute QEMU command");
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(remove_cache());
-            println!("[QEMU] Trying to show error dialog using 'zenity'...");
             if !output.status.success() {
+                println!("[QEMU] Trying to show error dialog using 'zenity'...");
                 let error_message = String::from_utf8_lossy(&output.stderr);
                 println!("[QEMU] Error: {}", error_message);
                 eprintln!("[QEMU] Error: {}", error_message);
