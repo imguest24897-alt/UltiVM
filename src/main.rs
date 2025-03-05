@@ -100,7 +100,7 @@ struct AppConfig {
     vm: VMConfig,
 }
 
-const VERSION: &str = "0.0.1u1";
+const VERSION: &str = "0.0.1u2";
 
 async fn greet() -> impl Responder {
     HttpResponse::Ok()
@@ -229,10 +229,11 @@ fn main() {
         .arg("mkdir .ultivm_cache")
         .output()
         .expect("Failed to execute command");
-    println!("============================================");
-    println!("=   WELCOME TO ULTIVM - A ONLINE VIRTUAL   =");
-    println!("=         COLLABORATIVE MACHINE            =");
-    println!("============================================");
+    println!("██       ██ ██      ███████ ███████ ██      ██ ████  ███");
+    println!("██       ██ ██         █       █     ██    ██  ██  ██  ██");
+    println!("██       ██ ██         █       █      ██  ██   ██      ██");
+    println!("██       ██ ██         █       █       ████    ██      ██");
+    println!("  ███████   ███████    █    ██████      ██     ██      ██");
     println!();
     if !std::path::Path::new("req/config.ini").exists() {
         eprintln!("E: Configuration file not found! You should go ahead and download the sample config.ini file from our repository (https://github.com/imguest24897-alt/UltiVM).");
