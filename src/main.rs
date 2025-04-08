@@ -266,7 +266,7 @@ fn main() {
                     }
                     iter.next();
                 }
-                "--enable-kvm" | "-usb" => {
+                "--enable-kvm" | "-usb" | "-kernel" => {
                     // don't need to check anything in this
                 }
                 _ => {
