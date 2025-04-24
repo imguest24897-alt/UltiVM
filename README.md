@@ -7,11 +7,11 @@ Before building, make sure you have Rust with Cargo installed. Also, Git is requ
 ```bash
 git clone https://github.com/imguest24897-alt/UltiVM.git ; cd UltiVM
 ```
-2. Get some of the submodules
+1. Get some of the submodules
 ```bash
 git submodule update --init --recursive
 ```
-3. Installing dependencies (if your cargo does not want to do that)
+1. Installing dependencies (if your cargo does not want to do that)
 ```bash
 cargo install actix-web
 cargo install config
@@ -19,7 +19,7 @@ cargo install serde
 cargo install reqwest
 cargo install tokio
 ```
-4. Build it
+1. Build it
 ```bash
 cargo build --path .
 ```
