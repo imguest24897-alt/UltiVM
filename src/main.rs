@@ -29,6 +29,8 @@ struct WebAppConfig {
     service_description: String,
     #[serde(rename = "serviceAuthor")]
     service_author: String,
+    #[serde(rename = "hostedBy")]
+    hosted_by: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -235,6 +237,7 @@ fn main() {
     println!("██       ██ ██         █       █       ████    ██      ██");
     println!("  ███████   ███████    █    ██████      ██     ██      ██");
     println!();
+    println!("Version v{}", VERSION);
     if !std::path::Path::new("req/config.ini").exists() {
         eprintln!("E: Configuration file not found! You should go ahead and download the sample config.ini file from our repository (https://github.com/imguest24897-alt/UltiVM).");
         exit(1);
@@ -266,7 +269,7 @@ fn main() {
                     }
                     iter.next();
                 }
-                "--enable-kvm" | "-usb" | "-kernel" => {
+                "--enable-kvm" | "-usb" | "-kernel" | "-device" | "-usbdevice" => {
                     // don't need to check anything in this
                 }
                 _ => {
