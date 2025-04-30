@@ -207,7 +207,7 @@ async fn check_for_updates() -> Result<(), Error> {
     println!("Latest version: {}", latest_version);
     println!("Update title: {}", update_title);
 
-    if latest_version != VERSION {
+    if latest_version != VERSION || latest_version != "v0.0.1u2" {
         println!("A new version of UltiVM is available: {} - {}", latest_version, update_title);
         println!("Please update to the latest version.");
     } else {
