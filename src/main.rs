@@ -6,6 +6,7 @@ use actix_web::{HttpResponse, http::header};
 use config::{Config, File, FileFormat};
 use serde::Deserialize;
 use reqwest::Error;
+mod crash_handler;
 
 #[derive(Debug, Deserialize)]
 struct MainConfig {
@@ -42,7 +43,7 @@ struct AuthConfig {
     #[serde(rename = "dbPath")]
     db_path: String,
     #[serde(rename = "mailEnabled")]
-    mailEnabled: bool,
+    mail_enabled: bool,
     #[serde(rename = "smtp")]
     smtp: String,
     #[serde(rename = "smtpUsername")]
@@ -242,6 +243,9 @@ fn main() {
         eprintln!("E: Configuration file not found! You should go ahead and download the sample config.ini file from our repository (https://github.com/imguest24897-alt/UltiVM).");
         exit(1);
     }
+
+    // Initialize the crash handler. MESSAGE FOR FUTURE: Maybe make this configurable via config?
+    crash_handler::setup_crash_handler();
 
     // Call check_for_updates
     let rt = tokio::runtime::Runtime::new().unwrap();
