@@ -266,7 +266,7 @@ fn main() {
     while let Some(arg) = iter.next() {
         if allowed_args.contains(&arg) {
             match arg {
-                "-hda" | "-cdrom" | "-drive" | "-accel" | "-device" | "-hdb" | "-hdc" | "-hdd" | "-usbdevice" | "-no-shutdown" | "-no-reboot" | "-nodefaults" | "-qmp" | "-qmp-pretty" | "-chardev" | "-gdb" | "netdev" | "-serial" | "-parallel" | "-soundhw" | "-audio" | "-append" | "-name" | "-k" => {
+                "-hda" | "-cdrom" | "-drive" | "-accel" | "-hdb" | "-hdc" | "-hdd" | "-no-shutdown" | "-no-reboot" | "-nodefaults" | "-qmp" | "-qmp-pretty" | "-chardev" | "-gdb" | "netdev" | "-serial" | "-parallel" | "-soundhw" | "-audio" | "-append" | "-name" | "-k" => {
                     if iter.peek().is_none() {
                         valid = false;
                         break;
