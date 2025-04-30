@@ -10,8 +10,13 @@ pub fn setup_crash_handler() {
                 location.line()
             );
         }
-        if let Some(message) = info.payload().downcast_ref::<&str>() {
-            eprintln!("Oops! UltiVM has ran into a unknown error and can't show a error window!\r\n{}", message);
+        match info.payload().downcast_ref::<&str>() {
+            Some(message) => {
+                eprintln!("Oops! UltiVM has run into an unknown error and can't show an error window!\r\n{}", message);
+            }
+            None => {
+                eprintln!("Oops! UltiVM has run into an unknown error and can't show an error window!");
+            }
         }
     }));
 }
